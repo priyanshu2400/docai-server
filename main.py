@@ -166,6 +166,9 @@ async def process_message_and_image(message: str, file: Optional[UploadFile]) ->
 
     return {"message": "No image provided and no symptoms described. Please describe your symptoms or upload an image for better diagnosis."}
 
+@app.get("/")
+def hello():
+    return "welcome"       
 @app.post("/predict")
 async def predict(message: str = Form(...), file: UploadFile = File(None)):
     result = await process_message_and_image(message, file)
