@@ -7,12 +7,4 @@ typing_extensions==4.12.2
 pydantic==2.9.2
 # protobuf==5.28.2
 fastapi==0.115.0
-google-ai-generativelanguage==0.6.9
-google-api-core==2.20.0
-google-api-python-client==2.146.0
-google-auth==2.35.0
-google-auth-httplib2==0.2.0
 google-generativeai==0.8.1
-google-pasta==0.2.0
-python-dotenv==1.0.1
-googleapis-common-protos==1.65.0
