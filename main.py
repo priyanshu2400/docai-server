@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 from typing import Optional
 from PIL import Image
+import tensorflow as tf
 from tensorflow.keras.preprocessing import image
 from tensorflow.keras.models import load_model as keras_load_model
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
@@ -150,18 +151,28 @@ async def process_message_and_image(message: str, file: Optional[UploadFile]) ->
                 return {"message": response}
             else:
                 # Ask for further input
-                body_part_response = model.generate_content(f"{prompt} \n \n sympotoms:{message} \n \n Based on symptoms, which part of the body is most likely affected: lungs or heart or something else. give one word answer .for eg heart or lungs or brain or neither?")
-                if 'heart' in body_part_response.text.lower():
+                # Generate body part response based on symptoms
+                body_part_response = model.generate_content(f"{prompt} \n \n symptoms:{message} \n \n Based on symptoms, which part of the body is most likely affected: lungs or heart or something else. Give one word answer like heart, lungs, brain, or neither.")
+
+                # Safely extract the text from the response
+                response_text = body_part_response.text.lower()
+                print(response_text)
+                # Check the response for heart, lungs, or neither
+                if 'heart' in response_text:
                     return {"message": "It seems like the issue might be with the heart. Please provide the following details: age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal."}
-                elif 'lung' in body_part_response.text.lower():
+                elif 'lungs' in response_text:
                     return {"message": "It seems like the issue might be with the lungs. Please upload scans for better diagnosis."}
-                elif 'neither' in body_part_response.text.lower():
-                    response = model.generate_content(f"{prompt} \n {message}")
-                    return {"message": response.text}
+                elif 'neither' in response_text:
+                    # Generate a follow-up response if neither heart nor lungs are indicated
+                    detailed_response = model.generate_content(f"You are an AI doctor assistant. A new patient is describing their symptoms, "
+                                                                "and you are helping them to understand what possible disease they might have, "
+                                                                "so they can consult a doctor. Respond carefully based on the symptoms provided."
+                                                            "very important :- keep your response short and to the point . \n {message}")
+                    return {"message":detailed_response.text}
                 else:
-                    return {"message": f"Based on the symptoms, the problem might be related to {body_part_response.text}. However, I cannot provide a detailed analysis. Please consult a doctor."}
-        
+                    return {"message": f"Based on the symptoms, the problem might be related to {response_text}. However, I cannot provide a detailed analysis. Please consult a doctor."}
         except Exception as e:
+            print(str(e))
             return {"error": f"Error processing message: {str(e)}"}
 
     return {"message": "No image provided and no symptoms described. Please describe your symptoms or upload an image for better diagnosis."}
