@@ -5,7 +5,7 @@ WORKDIR /code
 
 COPY ./requirements.txt /code/requirements.txt
 COPY ./app/lung_disease_model.h5 /code/lung_disease_model.h5
-COPY ./app/disease_prediction_model.pkl /code/app/disease_prediction_model.pkl
+COPY ./app/disease_prediction_model.pkl /code/disease_prediction_model.pkl
 
 RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
