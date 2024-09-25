@@ -22,17 +22,20 @@ if api_key is None:
 genai.configure(api_key=api_key)
 
 # Load models
-lung_disease_model = keras_load_model('lung_disease_model.h5')
-heart_disease_model = joblib.load('disease_prediction_model.pkl')
+lung_disease_model = keras_load_model("/code/app/lung_disease_model.h5")
+
+# lung_disease_model = keras_load_model('lung_disease_model.h5')
+heart_disease_model = joblib.load('/code/app/disease_prediction_model.pkl')
 
 app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Adjust as needed
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 def preprocess_image(img: Image.Image) -> np.ndarray:
